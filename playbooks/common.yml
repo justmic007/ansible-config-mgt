@@ -24,3 +24,26 @@
       apt:
         name: wireshark
         state: latest
+
+- name: Create directory, file and set timezone on all the servers
+  hosts: lb, db, webservers, nfs
+  # remote_user: ubuntu
+  become: yes
+  become_user: root
+  tasks:
+    - name: Create a directory
+      file:
+        path: /home/sample
+        state: directory
+        mode: "0755" # Set the permissions for the directory which gives read, write, and execute permissions to the owner and read and execute permissions to the group and others.
+
+    - name: Create a file
+      file:
+        path: /home/sample/readme.txt
+        state: touch
+        mode: "0644" # Set the permissions for the file which gives read and write permissions to the owner and read-only permissions to the group and others.
+
+    - name: Set timezones on all servers
+      file:
+        path: /home/sample/readme.txt
+        state: touch
