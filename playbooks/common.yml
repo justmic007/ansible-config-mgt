@@ -44,6 +44,5 @@
         mode: "0644" # Set the permissions for the file which gives read and write permissions to the owner and read-only permissions to the group and others.
 
     - name: Set timezones on all servers
-      file:
-        path: /home/sample/readme.txt
-        state: touch
+      timezone:
+        name: Africa/Lagos
