@@ -22,10 +22,17 @@
 #   become: true
 #   command: cp -r /var/www/html/html/ /var/www/
 
-- name: Copy HTML content to one level up
-  ansible.builtin.copy:
+# - name: Copy HTML content to one level up
+#   ansible.builtin.copy:
+#     src: /var/www/html/html/
+#     dest: /var/www/
+
+- name: Copy html content to one level up
+  become: true
+  copy:
     src: /var/www/html/html/
     dest: /var/www/
+    remote_src: yes
 
 - name: Start service httpd, if not started
   become: true
