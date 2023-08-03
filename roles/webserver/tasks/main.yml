@@ -31,7 +31,7 @@
   become: true
   copy:
     src: /var/www/html/html/
-    dest: /var/www/
+    dest: /var/www/html/
     remote_src: yes
 
 - name: Start service httpd, if not started
