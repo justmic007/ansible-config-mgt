@@ -1,8 +1,56 @@
+# ---
+# - name: Install and configure Apache (`httpd` service)
+#   become: true
+#   ansible.builtin.yum:
+#     name: "httpd"
+#     state: present
+
+# - name: Install git
+#   become: true
+#   ansible.builtin.yum:
+#     name: "git"
+#     state: present
+
+# - name: Clone a repo
+#   become: true
+#   ansible.builtin.git:
+#     repo: https://github.com/justmic007/tooling.git
+#     dest: /var/www/html
+#     force: yes
+
+# # - name: Copy html content to one level up
+# #   become: true
+# #   command: cp -r /var/www/html/html/ /var/www/
+
+# # - name: Copy HTML content to one level up
+# #   ansible.builtin.copy:
+# #     src: /var/www/html/html/
+# #     dest: /var/www/
+
+# - name: Copy html content to one level up
+#   become: true
+#   copy:
+#     src: /var/www/html/html/
+#     dest: /var/www/html/
+#     remote_src: yes
+
+# - name: Start service httpd, if not started
+#   become: true
+#   ansible.builtin.service:
+#     name: httpd
+#     state: started
+
+# - name: Recursively remove /var/www/html/html/ directory
+#   become: true
+#   ansible.builtin.file:
+#     path: /var/www/html/html
+#     state: absent
+
 ---
-- name: Install and configure Apache (`httpd` service)
+- name: Install and configure Nginx
   become: true
   ansible.builtin.yum:
-    name: "httpd"
+    name: "nginx"
     state: present
 
 - name: Install git
@@ -11,37 +59,69 @@
     name: "git"
     state: present
 
-- name: Clone a repo
+- name: Remove existing directory if it exists
+  become: true
+  ansible.builtin.file:
+    path: /usr/share/nginx/html
+    state: absent
+
+- name: Create directory
+  become: true
+  ansible.builtin.file:
+    path: /usr/share/nginx/html
+    state: directory
+    mode: '0755'
+
+- name: Clone a repo using the git module
   become: true
   ansible.builtin.git:
     repo: https://github.com/justmic007/tooling.git
-    dest: /var/www/html
+    dest: /usr/share/nginx/html
+    version: master  # You can specify a specific branch or commit if needed
     force: yes
 
-# - name: Copy html content to one level up
-#   become: true
-#   command: cp -r /var/www/html/html/ /var/www/
-
-# - name: Copy HTML content to one level up
-#   ansible.builtin.copy:
-#     src: /var/www/html/html/
-#     dest: /var/www/
+- name: Set appropriate permissions on the cloned directory
+  become: true
+  ansible.builtin.file:
+    path: /usr/share/nginx/html
+    mode: '0755'
+    recurse: yes
 
 - name: Copy html content to one level up
   become: true
-  copy:
-    src: /var/www/html/html/
-    dest: /var/www/html/
+  ansible.builtin.copy:
+    src: /usr/share/nginx/html/html/
+    dest: /usr/share/nginx/html/
     remote_src: yes
 
-- name: Start service httpd, if not started
+# - name: Update default.conf to include index.php
+#   # hosts: your_nginx_servers
+#   tasks:
+- name: Add index.php to index list
   become: true
-  ansible.builtin.service:
-    name: httpd
-    state: started
+  ansible.builtin.replace:
+    path: /etc/nginx/conf.d/default.conf
+    regexp: '^(\s*index\s+.*)$'
+    replace: '\1 index.php;'
+    backup: yes
 
-- name: Recursively remove /var/www/html/html/ directory
+- name: Change ownership to nginx user and group
   become: true
   ansible.builtin.file:
-    path: /var/www/html/html
+    path: /usr/share/nginx/html
+    owner: nginx
+    group: nginx
+    recurse: yes
+
+- name: Start service nginx, if not started
+  become: true
+  ansible.builtin.service:
+    name: nginx
+    state: started
+
+- name: Recursively remove /usr/share/nginx/html/html/ directory
+  become: true
+  ansible.builtin.file:
+    path: /usr/share/nginx/html/html
     state: absent
+

@@ -4,9 +4,11 @@
 {% for vhost in apache_vhosts %}
 <VirtualHost {{ apache_listen_ip }}:{{ apache_listen_port }}>
   ServerName {{ vhost.servername }}
+
 {% if vhost.serveralias is defined %}
   ServerAlias {{ vhost.serveralias }}
 {% endif %}
+
 {% if vhost.documentroot is defined %}
   DocumentRoot "{{ vhost.documentroot }}"
 {% endif %}
@@ -14,6 +16,7 @@
 {% if vhost.serveradmin is defined %}
   ServerAdmin {{ vhost.serveradmin }}
 {% endif %}
+
 {% if vhost.documentroot is defined %}
   <Directory "{{ vhost.documentroot }}">
     AllowOverride {{ vhost.allow_override | default(apache_allow_override) }}
@@ -26,9 +29,11 @@
 {% endif %}
   </Directory>
 {% endif %}
+
 {% if vhost.extra_parameters is defined %}
-{{ vhost.extra_parameters | indent(width=2, first=True) }}
+  {{ vhost.extra_parameters }}
 {% endif %}
+
 </VirtualHost>
 
 {% endfor %}
@@ -74,8 +79,20 @@
   </Directory>
 {% endif %}
 {% if vhost.extra_parameters is defined %}
-{{ vhost.extra_parameters | indent(width=2, first=True) }}
+  {{ vhost.extra_parameters }}
 {% endif %}
+
+{% if vhost.loadbalancer_name is defined %}
+  <proxy balancer://{{ lb_name }}>
+        BalancerMember http://{{ lb_target1 }}
+        BalancerMember http://{{ lb_target2 }}
+        BalancerMember http://{{ lb_target3 }}
+        ProxySet lbmethod=bytraffic
+  </proxy>
+ProxyPass "/" "balancer://{{ lb_name }}/"
+ProxyPassReverse "/" "balancer://{{ lb_name }}/"
+{% endif %}
+
 </VirtualHost>
 
 {% endif %}

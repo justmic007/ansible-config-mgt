@@ -1,3 +1,20 @@
 [uat-webservers]
-172.31.25.214 ansible_user=ec2-user
-172.31.19.54 ansible_user=ec2-user
+172.31.10.31 ansible_user=ec2-user
+172.31.15.13 ansible_user=ec2-user
+# [uat-webservers]
+# 172.31.8.99 ansible_user=ec2-user
+# 172.31.1.66 ansible_user=ec2-user
+
+# [uat-webservers]
+# 172.31.25.214 ansible_user=ec2-user
+# 172.31.19.54 ansible_user=ec2-user
+
+# [uat-webservers]
+# server1 ansible_host=172.31.25.214 ansible_user=ec2-user
+# server2 ansible_host=172.31.19.54 ansible_user=ec2-user
+
+# [uat-webservers]
+# 172.31.25.214
+# 172.31.19.54
+
+
