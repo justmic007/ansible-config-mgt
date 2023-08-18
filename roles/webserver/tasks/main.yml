@@ -81,6 +81,35 @@
     - php-pdo
     - php-mbstring
     - php-xml
+    - php-mysqli
+
+
+# ---------- find a script to uncomment this block of code and rename the fascgi_pass value. Also the clock should not be duplicated whenever the playbook is run
+
+    location ~ \.php$ {
+        root           /usr/share/nginx/html;
+        fastcgi_pass   unix:/var/run/php-fpm/www.sock;
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+
+# ---------------------------------------------------------
+
+- name: Enable PHP MySQLi Extension
+  replace:
+    path: /etc/php.ini
+    regexp: '^;extension=mysqli$'
+    replace: 'extension=mysqli'
+  notify: Restart PHP-FPM
+
+- name: Check PHP Configuration
+  command: php -i | grep php.ini
+  register: php_config
+
+- name: Display PHP Configuration
+  debug:
+    var: php_config.stdout_lines
 
 - name: Start PHP-FPM service
   ansible.builtin.systemd:
