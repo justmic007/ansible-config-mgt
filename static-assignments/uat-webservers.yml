@@ -1,8 +1,10 @@
 ---
 - hosts: uat-webservers
   become: true
-  roles:
+  roles: # Enable nginx or apache role based on needs, but both should not be installed on same instance, EXCEPT you will change their port numbers
     - nginx
+    - mysql
+      # become: yes
     # - apache
     - webserver
 

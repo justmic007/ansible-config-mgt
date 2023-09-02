@@ -69,8 +69,8 @@ http {
         {{ upstream.strategy }};
 {% endif %}
 {% for server in upstream.servers %}
-        server 172.31.15.80;
-        server 172.31.11.206;
+        server 172.31.32.209;
+        server 172.31.40.194;
 {% endfor %}
 {% if upstream.keepalive is defined %}
         keepalive 16;
